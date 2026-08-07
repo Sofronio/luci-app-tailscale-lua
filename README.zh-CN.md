@@ -101,9 +101,8 @@ cp -f tailscale.zh-cn.lmo                             /usr/lib/lua/luci/i18n/
 
 ## 翻译
 
-翻译源在 `po/`,SDK 构建自动生成 `luci-i18n-*` 子包。直接拷贝安装时,
-仓库附带了从 `openwrt/luci openwrt-24.10` 分支编译的官方 `po2lmo`
-(`modules/luci-base/src/po2lmo.c`):
+翻译源在 `po/`。仓库附带了从 `openwrt/luci openwrt-24.10` 分支编译的官方
+`po2lmo`(`modules/luci-base/src/po2lmo.c`),发布压缩包已包含编译好的翻译:
 
 ```bash
 ./tools/build-lmo.sh

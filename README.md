@@ -107,9 +107,9 @@ Open LuCI → **VPN → Tailscale**.
 
 ## Translations
 
-PO sources live in `po/`. The SDK build generates the `luci-i18n-*` subpackages
-automatically. For direct-copy installs, this repo ships the official `po2lmo`
-tool (compiled from `openwrt/luci openwrt-24.10`, `modules/luci-base/src/po2lmo.c`):
+PO sources live in `po/`. This repo ships the official `po2lmo` tool
+(compiled from `openwrt/luci openwrt-24.10`, `modules/luci-base/src/po2lmo.c`); the
+release tarball already contains the compiled translation:
 
 ```bash
 ./tools/build-lmo.sh
