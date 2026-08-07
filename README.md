@@ -90,15 +90,6 @@ cp -f tailscale.zh-cn.lmo                             /usr/lib/lua/luci/i18n/
 /etc/init.d/rpcd restart
 ```
 
-**Option D — OpenWrt SDK build (for packaging as .ipk)**
-
-```bash
-git clone https://github.com/openwrt/luci   # or your SDK checkout
-cp -r luci-app-tailscale-lua luci/applications/
-cd luci && make package/luci-app-tailscale-lua/compile
-# artifacts: luci-app-tailscale-lua_*.ipk + luci-i18n-tailscale-lua-zh-cn_*.ipk
-```
-
 Open LuCI → **VPN → Tailscale**.
 
 ## First login (cold start)
