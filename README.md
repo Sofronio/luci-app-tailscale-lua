@@ -40,9 +40,9 @@ standard LuCI i18n (Simplified Chinese included).
 ## Download
 
 ```bash
-git clone https://github.com/<your-account>/luci-app-tailscale-lua
+git clone https://github.com/Sofronio/luci-app-tailscale-lua
 # or
-wget https://github.com/<your-account>/luci-app-tailscale-lua/archive/refs/heads/main.tar.gz
+wget https://github.com/Sofronio/luci-app-tailscale-lua/archive/refs/heads/main.tar.gz
 tar xzf main.tar.gz
 ```
 

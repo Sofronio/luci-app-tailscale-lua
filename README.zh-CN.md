@@ -37,9 +37,9 @@
 ## 下载
 
 ```bash
-git clone https://github.com/<你的账号>/luci-app-tailscale-lua
+git clone https://github.com/Sofronio/luci-app-tailscale-lua
 # 或
-wget https://github.com/<你的账号>/luci-app-tailscale-lua/archive/refs/heads/main.tar.gz
+wget https://github.com/Sofronio/luci-app-tailscale-lua/archive/refs/heads/main.tar.gz
 tar xzf main.tar.gz
 ```
 
