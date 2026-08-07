@@ -40,29 +40,57 @@ standard LuCI i18n (Simplified Chinese included).
 ## Download
 
 ```bash
+# 压缩包(recommended, 含预编译中文翻译)
+wget https://github.com/Sofronio/luci-app-tailscale-lua/raw/main/dist/luci-app-tailscale-lua-1.0.0.tar.gz
+# or the full repo
 git clone https://github.com/Sofronio/luci-app-tailscale-lua
-# or
-wget https://github.com/Sofronio/luci-app-tailscale-lua/archive/refs/heads/main.tar.gz
-tar xzf main.tar.gz
 ```
 
 ## Installation
 
-**Option A — direct copy (on the router, from this repo)**
+**Option A — WebUI upload (easiest)**
+
+1. Download `dist/luci-app-tailscale-lua-1.0.0.tar.gz`
+2. In LuCI: **System → FileTransfer** (or any web upload page) → upload to the router (e.g. `/tmp`)
+3. Extract and copy the files (in SSH/TTYD):
 
 ```bash
-opkg update
-opkg install rpcd-mod-ucode ucode-mod-uci     # libubox: opkg upgrade libubox20240329 if needed
+cd /tmp && tar xzf luci-app-tailscale-lua-1.0.0.tar.gz
+cd luci-app-tailscale-lua
+opkg update && opkg install rpcd-mod-ucode ucode-mod-uci   # backend deps
+cp -f root/usr/lib/lua/luci/controller/tailscale.lua /usr/lib/lua/luci/controller/
+cp -f root/usr/lib/lua/luci/view/tailscale.htm        /usr/lib/lua/luci/view/
+cp -f tailscale.zh-cn.lmo                             /usr/lib/lua/luci/i18n/
 /etc/init.d/rpcd restart
-
-scp -r root/usr/lib/lua/luci/controller/tailscale.lua  root@ROUTER:/usr/lib/lua/luci/controller/
-scp -r root/usr/lib/lua/luci/view/tailscale.htm        root@ROUTER:/usr/lib/lua/luci/view/
-
-./tools/build-lmo.sh                                   # builds tailscale.zh-cn.lmo
-scp tailscale.zh-cn.lmo root@ROUTER:/usr/lib/lua/luci/i18n/
 ```
 
-**Option B — OpenWrt SDK build (for packaging as .ipk)**
+**Option B — from your PC (replace the router IP)**
+
+```bash
+# 把 192.168.1.1 换成你路由器的 IP
+ROUTER=192.168.1.1
+wget https://github.com/Sofronio/luci-app-tailscale-lua/raw/main/dist/luci-app-tailscale-lua-1.0.0.tar.gz
+tar xzf luci-app-tailscale-lua-1.0.0.tar.gz
+scp -r luci-app-tailscale-lua/root/usr/lib/lua/luci/controller/tailscale.lua root@$ROUTER:/usr/lib/lua/luci/controller/
+scp -r luci-app-tailscale-lua/root/usr/lib/lua/luci/view/tailscale.htm        root@$ROUTER:/usr/lib/lua/luci/view/
+scp -r luci-app-tailscale-lua/tailscale.zh-cn.lmo                            root@$ROUTER:/usr/lib/lua/luci/i18n/
+ssh root@$ROUTER "opkg update && opkg install rpcd-mod-ucode ucode-mod-uci && /etc/init.d/rpcd restart"
+```
+
+**Option C — on the router itself (no scp)**
+
+```bash
+cd /tmp
+wget https://github.com/Sofronio/luci-app-tailscale-lua/raw/main/dist/luci-app-tailscale-lua-1.0.0.tar.gz
+tar xzf luci-app-tailscale-lua-1.0.0.tar.gz && cd luci-app-tailscale-lua
+opkg update && opkg install rpcd-mod-ucode ucode-mod-uci
+cp -f root/usr/lib/lua/luci/controller/tailscale.lua /usr/lib/lua/luci/controller/
+cp -f root/usr/lib/lua/luci/view/tailscale.htm        /usr/lib/lua/luci/view/
+cp -f tailscale.zh-cn.lmo                             /usr/lib/lua/luci/i18n/
+/etc/init.d/rpcd restart
+```
+
+**Option D — OpenWrt SDK build (for packaging as .ipk)**
 
 ```bash
 git clone https://github.com/openwrt/luci   # or your SDK checkout
