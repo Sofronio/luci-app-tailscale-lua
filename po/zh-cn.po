@@ -1,0 +1,227 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Tailscale"
+msgstr "Tailscale"
+
+msgid "Status"
+msgstr "运行状态"
+
+msgid "Version"
+msgstr "版本"
+
+msgid "Tailscale IP"
+msgstr "Tailscale IP"
+
+msgid "IPv6"
+msgstr "IPv6"
+
+msgid "Tailnet"
+msgstr "Tailnet"
+
+msgid "TUN mode"
+msgstr "TUN 模式"
+
+msgid "Health"
+msgstr "健康检查"
+
+msgid "Start"
+msgstr "启动"
+
+msgid "Stop"
+msgstr "停止"
+
+msgid "Login"
+msgstr "登录"
+
+msgid "Logout"
+msgstr "退出登录"
+
+msgid "Admin Console"
+msgstr "官网管理平台"
+
+msgid "Devices (click a row for details)"
+msgstr "设备 (点击行查看详情)"
+
+msgid "Hostname"
+msgstr "主机名"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "OS"
+msgstr "系统"
+
+msgid "Online"
+msgstr "在线"
+
+msgid "Last seen"
+msgstr "上次在线"
+
+msgid "Handshake"
+msgstr "握手"
+
+msgid "Connection"
+msgstr "连接"
+
+msgid "Traffic"
+msgstr "流量"
+
+msgid "Key"
+msgstr "密钥"
+
+msgid "Collapse"
+msgstr "收起"
+
+msgid "Overview"
+msgstr "概览"
+
+msgid "Security"
+msgstr "安全"
+
+msgid "Logs"
+msgstr "日志"
+
+msgid "lines"
+msgstr "行"
+
+msgid "Load more (+50 lines)"
+msgstr "加载更多 (+50行)"
+
+msgid "Loading..."
+msgstr "加载中..."
+
+msgid "Running"
+msgstr "运行中"
+
+msgid "Logged out"
+msgstr "已退出登录"
+
+msgid "Not installed"
+msgstr "未安装"
+
+msgid "Unknown"
+msgstr "未知"
+
+msgid "Healthy"
+msgstr "正常"
+
+msgid "Copy"
+msgstr "复制"
+
+msgid "Not recorded"
+msgstr "未记录"
+
+msgid "Offline"
+msgstr "离线"
+
+msgid "Direct"
+msgstr "直连"
+
+msgid "relay"
+msgstr "中继"
+
+msgid "Expired!"
+msgstr "已过期!"
+
+msgid "days left"
+msgstr "天"
+
+msgid "(this device)"
+msgstr "(本机)"
+
+msgid "Details"
+msgstr "详情"
+
+msgid "No logs yet (appears when tailscale is active)"
+msgstr "暂无日志 (tailscale 有活动后自动出现)"
+
+msgid "(end of log buffer)"
+msgstr "(已到日志缓冲区底部)"
+
+msgid "Login command executed, check the logs below for the auth link"
+msgstr "登录命令已执行,请查看下方日志获取认证链接"
+
+msgid "Click Login to generate the auth link"
+msgstr "点击登录生成认证链接"
+
+msgid "Open auth link:"
+msgstr "打开认证链接:"
+
+msgid "Copy link"
+msgstr "复制链接"
+
+msgid "Currently online"
+msgstr "当前在线"
+
+msgid "s ago"
+msgstr "秒前"
+
+msgid "min ago"
+msgstr "分钟前"
+
+msgid "hr ago"
+msgstr "小时前"
+
+msgid "d ago"
+msgstr "天前"
+
+msgid "Yes"
+msgstr "是"
+
+msgid "No"
+msgstr "否"
+
+msgid "FQDN"
+msgstr "DNS 全称"
+
+msgid "Joined"
+msgstr "加入网络时间"
+
+msgid "Online status"
+msgstr "在线状态"
+
+msgid "Active"
+msgstr "正在通信"
+
+msgid "Client version"
+msgstr "客户端版本"
+
+msgid "Direct address"
+msgstr "直连地址"
+
+msgid "Relay node"
+msgstr "中继节点"
+
+msgid "Connection type"
+msgstr "连接方式"
+
+msgid "Last handshake"
+msgstr "上次握手"
+
+msgid "Last data transfer"
+msgstr "上次数据传输"
+
+msgid "Received (Rx)"
+msgstr "接收 (Rx)"
+
+msgid "Sent (Tx)"
+msgstr "发送 (Tx)"
+
+msgid "Total"
+msgstr "合计"
+
+msgid "Node public key"
+msgstr "节点公钥"
+
+msgid "Key expires"
+msgstr "密钥过期"
+
+msgid "Allowed IPs"
+msgstr "允许路由"
+
+msgid "Exit node"
+msgstr "出口节点"
+
+msgid "Exit node option"
+msgstr "可作为出口"

@@ -1,0 +1,331 @@
+<%+header%>
+<%
+	local st_url = luci.dispatcher.build_url("admin/vpn/tailscale/status")
+	local lo_url = luci.dispatcher.build_url("admin/vpn/tailscale/logs")
+	local ct_url = luci.dispatcher.build_url("admin/vpn/tailscale/ctl")
+	local lg_url = luci.dispatcher.build_url("admin/vpn/tailscale/login")
+	local ot_url = luci.dispatcher.build_url("admin/vpn/tailscale/logout")
+	local TS_T = luci.jsonc.stringify({
+		loading = translate("Loading..."),
+		running = translate("Running"), logout = translate("Logged out"), notinstalled = translate("Not installed"), unknown = translate("Unknown"),
+		healthy = translate("Healthy"),
+		start = translate("Start"), stop = translate("Stop"),
+		copy = translate("Copy"),
+		notrecorded = translate("Not recorded"),
+		online = translate("Online"), offline = translate("Offline"),
+		direct = translate("Direct"), relay = translate("relay"), expired = translate("Expired!"), daysleft = translate("days left"),
+		thisdev = translate("(this device)"), details = translate("Details"),
+		nologs = translate("No logs yet (appears when tailscale is active)"),
+		endbuffer = translate("(end of log buffer)"),
+		logindone = translate("Login command executed, check the logs below for the auth link"),
+		needlink = translate("Click Login to generate the auth link"),
+		openauth = translate("Open auth link:"), copylink = translate("Copy link"),
+		online_now = translate("Currently online"),
+		secago = translate("s ago"), minago = translate("min ago"), hrago = translate("hr ago"), dayago = translate("d ago"),
+		yes = translate("Yes"), no = translate("No"),
+		hostname = translate("Hostname"), fqdn = translate("FQDN"), os = translate("OS"), ipt = translate("Tailscale IP"),
+		ipv6 = translate("IPv6"), joined = translate("Joined"), onlinest = translate("Online status"),
+		active = translate("Active"), clientver = translate("Client version"),
+		directaddr = translate("Direct address"), relaynode = translate("Relay node"), conntype = translate("Connection type"),
+		lasths = translate("Last handshake"), lastdata = translate("Last data transfer"), lastseen = translate("Last seen"),
+		rx = translate("Received (Rx)"), tx = translate("Sent (Tx)"), total = translate("Total"),
+		pubkey = translate("Node public key"), keyexp = translate("Key expires"), allowed = translate("Allowed IPs"),
+		exitnode = translate("Exit node"), exitopt = translate("Exit node option")
+	})
+%>
+<div class="cbi-map">
+	<h2 name="content"><%:Tailscale%></h2>
+	<fieldset class="cbi-section">
+		<legend><%:Status%></legend>
+		<div class="cbi-section-node">
+			<table class="cbi-section-table" id="ts-status-table">
+				<tr><td width="30%"><%:Status%></td><td id="ts-status">...</td></tr>
+				<tr><td><%:Version%></td><td id="ts-version">-</td></tr>
+				<tr><td><%:Tailscale IP%></td><td id="ts-ipv4">-</td></tr>
+				<tr><td><%:IPv6%></td><td id="ts-ipv6">-</td></tr>
+				<tr><td><%:Tailnet%></td><td id="ts-tailnet">-</td></tr>
+				<tr><td><%:TUN mode%></td><td id="ts-tun">-</td></tr>
+				<tr><td><%:Health%></td><td id="ts-health">-</td></tr>
+			</table>
+			<div style="padding:5px" id="ts-actions">
+				<input type="button" class="cbi-button cbi-button-apply" value="<%:Start%>" id="ts-btn-toggle" onclick="tsToggle()" />
+				<input type="button" class="cbi-button cbi-button-apply" value="<%:Login%>" onclick="tsLogin()" id="ts-btn-login" style="display:none" />
+				<input type="button" class="cbi-button cbi-button-reset" value="<%:Logout%>" onclick="tsLogout()" id="ts-btn-logout" style="display:none" />
+				<input type="button" class="cbi-button cbi-button-apply" value="<%:Admin Console%>" onclick="tsOpenConsole()" />
+				<input type="text" id="ts-authkey" placeholder="tskey-..." style="width:240px;margin:0 5px;display:none" />
+			</div>
+			<div id="ts-login-info" style="padding:5px;display:none"></div>
+		</div>
+	</fieldset>
+	<fieldset class="cbi-section">
+		<legend><%:Devices (click a row for details)%></legend>
+		<div class="cbi-section-node">
+			<table class="cbi-section-table" id="ts-peers-table">
+				<tr class="cbi-section-table-titles">
+					<th><%:Hostname%></th><th><%:IP%></th><th><%:OS%></th><th><%:Online%></th><th><%:Last seen%></th><th><%:Handshake%></th><th><%:Connection%></th><th><%:Traffic%></th><th><%:Key%></th>
+				</tr>
+			</table>
+		</div>
+	</fieldset>
+	<fieldset class="cbi-section" id="ts-detail" style="display:none">
+		<legend id="ts-detail-title"></legend>
+		<div class="cbi-section-node" style="padding:5px">
+			<div style="padding:3px 0">
+				<input type="button" class="cbi-button cbi-button-reset" value="<%:Collapse%>" onclick="tsCloseDetail()" />
+				<input type="button" class="cbi-button cbi-button-action" value="<%:Overview%>" onclick="tsTab(0)" id="ts-tabbtn-0" />
+				<input type="button" class="cbi-button" value="<%:Connection%>" onclick="tsTab(1)" id="ts-tabbtn-1" />
+				<input type="button" class="cbi-button" value="<%:Traffic%>" onclick="tsTab(2)" id="ts-tabbtn-2" />
+				<input type="button" class="cbi-button" value="<%:Security%>" onclick="tsTab(3)" id="ts-tabbtn-3" />
+			</div>
+			<div id="ts-tab-0" style="display:block"><table class="cbi-section-table" id="ts-dtl-0"></table></div>
+			<div id="ts-tab-1" style="display:none"><table class="cbi-section-table" id="ts-dtl-1"></table></div>
+			<div id="ts-tab-2" style="display:none"><table class="cbi-section-table" id="ts-dtl-2"></table></div>
+			<div id="ts-tab-3" style="display:none"><table class="cbi-section-table" id="ts-dtl-3"></table></div>
+		</div>
+	</fieldset>
+	<fieldset class="cbi-section">
+		<legend><%:Logs%> (<span id="ts-log-count">100</span> <%:lines%>)</legend>
+		<div class="cbi-section-node">
+			<textarea style="width:100%;height:180px;font-family:monospace" id="ts-logs" readonly></textarea>
+			<div style="padding:5px">
+				<span style="font-size:11px;color:#888" id="ts-log-hint"></span>
+			</div>
+		</div>
+	</fieldset>
+</div>
+<script type="text/javascript">
+var TS_T = <%=TS_T%>;
+var stUrl = "<%=st_url%>", loUrl = "<%=lo_url%>", ctUrl = "<%=ct_url%>",
+    lgUrl = "<%=lg_url%>", otUrl = "<%=ot_url%>";
+var tsLogLines = 100;
+var tsData = null;          /* latest full dataset (detail panel uses cached copy) */
+var tsCurId = null;         /* device id currently shown in the detail panel */
+
+function tsCtl(action, cb) {
+	XHR.get(ctUrl, { action: action }, function(x) { if (cb) cb(); tsRefresh(); });
+}
+function tsToggle() {
+	var btn = document.getElementById("ts-btn-toggle");
+	tsCtl(btn.value == TS_T.stop ? "stop" : "start");
+}
+/* auth link block: "Open auth link" button + copy button + full URL */
+function tsLoginLink(url) {
+	return "<a href=\"" + url + "\" target=\"_blank\" class=\"cbi-button cbi-button-apply\" style=\"display:inline-block;margin:4px 0\">" + TS_T.openauth + "</a> " +
+		"<input type=\"button\" class=\"cbi-button\" value=\"" + TS_T.copylink + "\" onclick=\"tsCopy('" + url + "');this.value='✓';var _t=this;setTimeout(function(){_t.value='" + TS_T.copylink + "'},1200)\" />" +
+		"<br><span style=\"font-size:11px\">" + url + "</span>";
+}
+function tsLogin() {
+	XHR.get(lgUrl, { authkey: document.getElementById("ts-authkey").value }, function(x, d) {
+		var el = document.getElementById("ts-login-info");
+		el.style.display = "block";
+		if (d && d.url)
+			el.innerHTML = tsLoginLink(d.url);
+		else
+			el.innerHTML = TS_T.logindone;
+	});
+}
+function tsLogout() { XHR.get(otUrl, null, function() { tsRefresh(); }); }
+
+/* open the Tailscale admin console (ZeroTier-style entry point) */
+function tsOpenConsole() {
+	window.open("https://console.tailscale.com/admin/machines", "_blank");
+}
+
+/* ---------- formatters ---------- */
+function tsCopy(txt) {
+	var ta = document.createElement("textarea");
+	ta.value = txt;
+	ta.style.position = "fixed";
+	ta.style.opacity = "0";
+	document.body.appendChild(ta);
+	ta.select();
+	try { document.execCommand("copy"); } catch(e) {}
+	document.body.removeChild(ta);
+}
+function tsIpWithCopy(ip) {
+	return ip + " <a href=\"javascript:;\" onclick=\"tsCopy('" + ip + "');this.textContent='✓';var _t=this;setTimeout(function(){_t.textContent='" + TS_T.copy + "'},1200)\" style=\"font-size:11px\">" + TS_T.copy + "</a>";
+}
+function tsFmtTime(iso) {
+	if (!iso || iso.indexOf("0001-01-01") == 0) return "—";
+	var d = new Date(iso.replace(/\.\d+Z$/, "Z"));
+	if (isNaN(d.getTime())) return iso;
+	function p(n) { return (n < 10 ? "0" : "") + n; }
+	return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) +
+	       " " + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+}
+function tsFmtAgo(iso) {
+	if (!iso || iso.indexOf("0001-01-01") == 0) return "—";
+	var t = new Date(iso.replace(/\.\d+Z$/, "Z")).getTime();
+	if (isNaN(t)) return iso;
+	var s = Math.max(0, Math.floor((Date.now() - t) / 1000));
+	if (s < 60) return s + TS_T.secago;
+	if (s < 3600) return Math.floor(s / 60) + TS_T.minago;
+	if (s < 86400) return Math.floor(s / 3600) + TS_T.hrago;
+	return Math.floor(s / 86400) + TS_T.dayago;
+}
+function tsFmtBytes(n) {
+	n = Number(n) || 0;
+	if (n < 1024) return n + " B";
+	if (n < 1048576) return (n / 1024).toFixed(1) + " KB";
+	if (n < 1073741824) return (n / 1048576).toFixed(1) + " MB";
+	return (n / 1073741824).toFixed(2) + " GB";
+}
+function tsExpiry(iso) {
+	if (!iso || iso.indexOf("0001-01-01") == 0) return "—";
+	var t = new Date(iso.replace(/\.\d+Z$/, "Z")).getTime();
+	if (isNaN(t)) return iso;
+	var days = Math.ceil((t - Date.now()) / 86400000);
+	if (days < 0) return "<span style=\"color:red\">" + TS_T.expired + "</span>";
+	if (days < 30) return "<span style=\"color:orange\">" + days + " " + TS_T.daysleft + "</span>";
+	return days + " " + TS_T.daysleft;
+}
+function tsFmtConn(p) {
+	if (p.caddr) return TS_T.direct;
+	if (p.relay) return p.relay + " " + TS_T.relay;
+	return "—";
+}
+
+/* ---------- device table (poll-refreshed; detail keeps cached data) ---------- */
+function tsRender(d) {
+	if (!d) return;
+	tsData = d;
+	var map = { "running": TS_T.running, "logout": TS_T.logout, "not_installed": TS_T.notinstalled, "": TS_T.unknown };
+	document.getElementById("ts-status").textContent = map[d.status] || d.status || TS_T.unknown;
+	document.getElementById("ts-version").textContent = d.version || "-";
+	document.getElementById("ts-ipv4").innerHTML = d.ipv4 ? tsIpWithCopy(d.ipv4) : "-";
+	document.getElementById("ts-ipv6").innerHTML = d.ipv6 ? tsIpWithCopy(d.ipv6) : "-";
+	document.getElementById("ts-tailnet").textContent = d.domain_name || "-";
+	document.getElementById("ts-tun").textContent = d.TUNMode || "-";
+	document.getElementById("ts-health").textContent = (Array.isArray(d.health) ? d.health.join(", ") : (d.health || TS_T.healthy));
+	var btn = document.getElementById("ts-btn-toggle");
+	btn.value = (d.status == "running") ? TS_T.stop : TS_T.start;
+	btn.style.display = (d.status == "not_installed") ? "none" : "";
+	document.getElementById("ts-btn-login").style.display = (d.status == "logout") ? "" : "none";
+	document.getElementById("ts-btn-logout").style.display = (d.status == "running") ? "" : "none";
+	document.getElementById("ts-authkey").style.display = (d.status == "logout") ? "" : "none";
+	/* auto-show the pending auth link when logged out */
+	var li = document.getElementById("ts-login-info");
+	if (d.status == "logout") {
+		li.style.display = "block";
+		li.innerHTML = (d.authurl) ? tsLoginLink(d.authurl) : TS_T.needlink;
+	} else {
+		li.style.display = "none";
+	}
+	/* device rows: self pinned on top + clickable for details */
+	var rows = [];
+	if (d.self) rows.push({ k: "__self", r: d.self });
+	for (var id in (d.peers || {})) rows.push({ k: id, r: d.peers[id] });
+	var tb = document.getElementById("ts-peers-table");
+	while (tb.rows.length > 1) tb.deleteRow(1);
+	for (var i = 0; i < rows.length; i++) {
+		var p = rows[i].r, tr = tb.insertRow(-1);
+		tr.style.cursor = "pointer";
+		tr.onclick = (function(id) { return function() { tsDetail(id); }; })(rows[i].k);
+		if (p.self) tr.style.fontWeight = "bold";
+		tr.insertCell(-1).textContent = (p.hostname || TS_T.unknown) + (p.self ? " " + TS_T.thisdev : "");
+		var ipCell = tr.insertCell(-1);
+		var ips = (p.ip || "").split("<br>");
+		var ipHtml = "";
+		for (var j = 0; j < ips.length; j++) {
+			if (!ips[j]) continue;
+			ipHtml += tsIpWithCopy(ips[j]);
+			if (j < ips.length - 1) ipHtml += "<br>";
+		}
+		ipCell.innerHTML = ipHtml || "-";
+		tr.insertCell(-1).textContent = p.ostype || "-";
+		tr.insertCell(-1).textContent = p.online ? TS_T.online : TS_T.offline;
+		tr.insertCell(-1).innerHTML = (p.online ? "<span title=\"" + TS_T.online_now + "\">—</span>" : tsFmtTime(p.lastseen));
+		tr.insertCell(-1).textContent = tsFmtAgo(p.lasthandshake);
+		tr.insertCell(-1).textContent = tsFmtConn(p);
+		tr.insertCell(-1).innerHTML = "↓" + tsFmtBytes(p.rx) + "<br>↑" + tsFmtBytes(p.tx);
+		tr.insertCell(-1).innerHTML = tsExpiry(p.keyexpiry);
+	}
+	/* note: the detail panel is NOT refreshed here (cached data) */
+}
+
+/* ---------- detail panel (tabs, cached data) ---------- */
+function tsTab(n) {
+	for (var i = 0; i < 4; i++) {
+		document.getElementById("ts-tab-" + i).style.display = (i == n) ? "block" : "none";
+		document.getElementById("ts-tabbtn-" + i).className = (i == n) ? "cbi-button cbi-button-action" : "cbi-button";
+	}
+}
+function tsCloseDetail() {
+	document.getElementById("ts-detail").style.display = "none";
+	tsCurId = null;
+}
+function tsDetail(id) {
+	/* same device already open -> keep cached data, no re-render */
+	if (id == tsCurId) return;
+	var p = (id == "__self") ? tsData.self : (tsData.peers || {})[id];
+	if (!p) return;
+	tsCurId = id;
+	document.getElementById("ts-detail").style.display = "";
+	document.getElementById("ts-detail-title").textContent =
+		(p.hostname || TS_T.unknown) + (p.self ? " " + TS_T.thisdev : "") + " " + TS_T.details;
+	function row(tb, k, v) {
+		var tr = tb.insertRow(-1);
+		tr.insertCell(-1).textContent = k;
+		tr.insertCell(-1).innerHTML = v;
+	}
+	var kb;
+	/* overview */
+	kb = document.getElementById("ts-dtl-0");
+	while (kb.rows.length) kb.deleteRow(0);
+	row(kb, TS_T.hostname, p.hostname || "—");
+	row(kb, TS_T.fqdn, p.dnsname || "—");
+	row(kb, TS_T.os, p.ostype || "—");
+	row(kb, TS_T.ipt, p.ipv4 ? tsIpWithCopy(p.ipv4) : "—");
+	row(kb, TS_T.ipv6, p.ipv6 ? tsIpWithCopy(p.ipv6) : "—");
+	row(kb, TS_T.joined, tsFmtTime(p.created));
+	row(kb, TS_T.onlinest, p.online ? TS_T.online : TS_T.offline);
+	row(kb, TS_T.active, p.active ? TS_T.yes : TS_T.no);
+	row(kb, TS_T.clientver, p.clientversion || "—");
+	/* connection */
+	kb = document.getElementById("ts-dtl-1");
+	while (kb.rows.length) kb.deleteRow(0);
+	row(kb, TS_T.directaddr, p.caddr || "—");
+	row(kb, TS_T.relaynode, p.relay ? (p.relay + " (DERP)") : "—");
+	row(kb, TS_T.conntype, tsFmtConn(p));
+	row(kb, TS_T.lasths, tsFmtTime(p.lasthandshake) + " (" + tsFmtAgo(p.lasthandshake) + ")");
+	row(kb, TS_T.lastdata, tsFmtTime(p.lastwrite) + " (" + tsFmtAgo(p.lastwrite) + ")");
+	row(kb, TS_T.lastseen, p.online ? TS_T.online_now : (tsFmtTime(p.lastseen) + " (" + tsFmtAgo(p.lastseen) + ")"));
+	/* traffic */
+	kb = document.getElementById("ts-dtl-2");
+	while (kb.rows.length) kb.deleteRow(0);
+	row(kb, TS_T.rx, tsFmtBytes(p.rx) + " (" + (Number(p.rx) || 0) + " B)");
+	row(kb, TS_T.tx, tsFmtBytes(p.tx) + " (" + (Number(p.tx) || 0) + " B)");
+	row(kb, TS_T.total, tsFmtBytes((Number(p.rx) || 0) + (Number(p.tx) || 0)));
+	/* security */
+	kb = document.getElementById("ts-dtl-3");
+	while (kb.rows.length) kb.deleteRow(0);
+	row(kb, TS_T.pubkey, (p.pubkey || "—") + (p.pubkey ? " <a href=\"javascript:;\" style=\"font-size:11px\" onclick=\"tsCopy('" + p.pubkey + "');this.textContent='✓';var _t=this;setTimeout(function(){_t.textContent='" + TS_T.copy + "'},1200)\">" + TS_T.copy + "</a>" : ""));
+	row(kb, TS_T.keyexp, tsFmtTime(p.keyexpiry) + " (" + tsExpiry(p.keyexpiry) + ")");
+	row(kb, TS_T.allowed, p.allowedips || "—");
+	row(kb, TS_T.exitnode, p.exit_node ? TS_T.yes : TS_T.no);
+	row(kb, TS_T.exitopt, p.exit_node_option ? TS_T.yes : TS_T.no);
+	tsTab(0);
+}
+
+/* ---------- logs ---------- */
+function tsUpdateLogs(x, d, scroll) {
+	var ta = document.getElementById("ts-logs");
+	var lg = (d && d.logs) ? d.logs.filter(function(l){ return l; }).join("\n") : "";
+	ta.value = lg || TS_T.nologs;
+	document.getElementById("ts-log-count").textContent = tsLogLines;
+	document.getElementById("ts-log-hint").textContent = (d && d.logs && d.logs.length < tsLogLines) ? TS_T.endbuffer : "";
+	if (scroll) ta.scrollTop = ta.scrollHeight;
+}
+function tsRefresh() {
+	XHR.get(stUrl, null, function(x, d) { tsRender(d); });
+	XHR.get(loUrl, { lines: tsLogLines }, function(x, d) { tsUpdateLogs(x, d, true); });
+}
+/* poll: status card + device table + logs every 5s (detail panel keeps cached data) */
+function tsStartPolls() {
+	XHR.poll(5, stUrl, null, function(x, d) { tsRender(d); });
+	XHR.poll(5, loUrl, { lines: tsLogLines }, function(x, d) { tsUpdateLogs(x, d, false); });
+}
+tsRefresh();
+tsStartPolls();
+</script>
+<%+footer%>

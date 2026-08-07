@@ -1,0 +1,227 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "Tailscale"
+msgstr "Tailscale"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Version"
+msgstr "Version"
+
+msgid "Tailscale IP"
+msgstr "Tailscale IP"
+
+msgid "IPv6"
+msgstr "IPv6"
+
+msgid "Tailnet"
+msgstr "Tailnet"
+
+msgid "TUN mode"
+msgstr "TUN mode"
+
+msgid "Health"
+msgstr "Health"
+
+msgid "Start"
+msgstr "Start"
+
+msgid "Stop"
+msgstr "Stop"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Admin Console"
+msgstr "Admin Console"
+
+msgid "Devices (click a row for details)"
+msgstr "Devices (click a row for details)"
+
+msgid "Hostname"
+msgstr "Hostname"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "OS"
+msgstr "OS"
+
+msgid "Online"
+msgstr "Online"
+
+msgid "Last seen"
+msgstr "Last seen"
+
+msgid "Handshake"
+msgstr "Handshake"
+
+msgid "Connection"
+msgstr "Connection"
+
+msgid "Traffic"
+msgstr "Traffic"
+
+msgid "Key"
+msgstr "Key"
+
+msgid "Collapse"
+msgstr "Collapse"
+
+msgid "Overview"
+msgstr "Overview"
+
+msgid "Security"
+msgstr "Security"
+
+msgid "Logs"
+msgstr "Logs"
+
+msgid "lines"
+msgstr "lines"
+
+msgid "Load more (+50 lines)"
+msgstr "Load more (+50 lines)"
+
+msgid "Loading..."
+msgstr "Loading..."
+
+msgid "Running"
+msgstr "Running"
+
+msgid "Logged out"
+msgstr "Logged out"
+
+msgid "Not installed"
+msgstr "Not installed"
+
+msgid "Unknown"
+msgstr "Unknown"
+
+msgid "Healthy"
+msgstr "Healthy"
+
+msgid "Copy"
+msgstr "Copy"
+
+msgid "Not recorded"
+msgstr "Not recorded"
+
+msgid "Offline"
+msgstr "Offline"
+
+msgid "Direct"
+msgstr "Direct"
+
+msgid "relay"
+msgstr "relay"
+
+msgid "Expired!"
+msgstr "Expired!"
+
+msgid "days left"
+msgstr "days left"
+
+msgid "(this device)"
+msgstr "(this device)"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "No logs yet (appears when tailscale is active)"
+msgstr "No logs yet (appears when tailscale is active)"
+
+msgid "(end of log buffer)"
+msgstr "(end of log buffer)"
+
+msgid "Login command executed, check the logs below for the auth link"
+msgstr "Login command executed, check the logs below for the auth link"
+
+msgid "Click Login to generate the auth link"
+msgstr "Click Login to generate the auth link"
+
+msgid "Open auth link:"
+msgstr "Open auth link:"
+
+msgid "Copy link"
+msgstr "Copy link"
+
+msgid "Currently online"
+msgstr "Currently online"
+
+msgid "s ago"
+msgstr "s ago"
+
+msgid "min ago"
+msgstr "min ago"
+
+msgid "hr ago"
+msgstr "hr ago"
+
+msgid "d ago"
+msgstr "d ago"
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "FQDN"
+msgstr "FQDN"
+
+msgid "Joined"
+msgstr "Joined"
+
+msgid "Online status"
+msgstr "Online status"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Client version"
+msgstr "Client version"
+
+msgid "Direct address"
+msgstr "Direct address"
+
+msgid "Relay node"
+msgstr "Relay node"
+
+msgid "Connection type"
+msgstr "Connection type"
+
+msgid "Last handshake"
+msgstr "Last handshake"
+
+msgid "Last data transfer"
+msgstr "Last data transfer"
+
+msgid "Received (Rx)"
+msgstr "Received (Rx)"
+
+msgid "Sent (Tx)"
+msgstr "Sent (Tx)"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Node public key"
+msgstr "Node public key"
+
+msgid "Key expires"
+msgstr "Key expires"
+
+msgid "Allowed IPs"
+msgstr "Allowed IPs"
+
+msgid "Exit node"
+msgstr "Exit node"
+
+msgid "Exit node option"
+msgstr "Exit node option"
